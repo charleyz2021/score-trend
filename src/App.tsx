@@ -636,9 +636,14 @@ export default function App() {
   };
 
   const onDownloadTemplate = () => {
+    const url = `${import.meta.env.BASE_URL}template.xlsx`;
+
+    // 一些手机/内置浏览器对 a.download 支持不稳定，先尝试 download，不行就新开
     const a = document.createElement("a");
-    a.href = "/template.xlsx";
+    a.href = url;
     a.download = "成绩模板.xlsx";
+    a.target = "_blank";
+    a.rel = "noopener";
     document.body.appendChild(a);
     a.click();
     a.remove();
