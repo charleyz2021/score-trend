@@ -110,7 +110,7 @@ export default function App() {
 
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  // ✅ 默认指标
+  // 默认指标
   const [metric, setMetric] = useState<MetricId>("total");
 
   async function onFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -214,7 +214,7 @@ export default function App() {
     return out;
   }, [exams]);
 
-  // ✅ 每个考试：name -> 当前 metric 数值
+  // 每个考试：name -> 当前 metric 数值
   const examScoreMaps = useMemo(() => {
     const maps = new Map<ExamId, Map<string, number | null>>();
 
@@ -300,7 +300,7 @@ export default function App() {
     return Array.from(s).sort((a, b) => a.localeCompare(b, "zh-Hans-CN"));
   }, [filteredExams, classFilter]);
 
-  // ✅ 当前学生在“所有考试中”是否存在某 metric 的任何数值（用于置灰）
+  // 当前学生在“所有考试中”是否存在某 metric 的任何数值（用于置灰）
   const studentHasMetricData = useMemo(() => {
     const has = new Map<MetricId, boolean>();
 
@@ -366,7 +366,7 @@ export default function App() {
           const name = String(r[ex.nameCol] ?? "").trim();
           if (name !== student) continue;
 
-          // 班级筛选（与你 examScoreMaps 同逻辑）
+          // 班级筛选（与examScoreMaps 同逻辑）
           if (classFilter !== "全校") {
             if (ex.classCol && hasUsableClassCol(ex)) {
               const rowCls = String(r[ex.classCol] ?? "").trim() || "未知班级";
@@ -403,7 +403,7 @@ export default function App() {
       });
   }, [exams, student, classFilter]);
 
-  // ✅ 如果当前 metric 变成“被置灰/不存在”，自动回退总分
+  // 如果当前 metric 变成“被置灰/不存在”，自动回退总分
   useEffect(() => {
     const opt = metricOptions.find(o => o.value === metric);
     if (!opt || (opt as any).disabled) setMetric("total");

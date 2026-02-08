@@ -230,8 +230,8 @@ function hasAnyNonEmpty(rows: any[], colKey: string | undefined, limit = 400) {
   return false;
 }
 
-// ========== metric detection（重点：排名强排除） ==========
-// ✅ 只改这个函数：更鲁棒 + 班排/年排强排除
+// ========== metric detection（排名强排除） ==========
+// 鲁棒 + 班排/年排强排除
 function detectMetricCols(cols: { key: string; label: string }[]) {
     const metricCols: any = {};
 
@@ -273,13 +273,13 @@ function detectMetricCols(cols: { key: string; label: string }[]) {
         }
 
         // ========= 分数：允许 “xx得分/xx_得分/xx得分_8” =========
-        // 总分：允许 总分/总分得分/总分原始…（你原来的 totalCol 兜底也会补）
+        // 总分：允许 总分/总分得分/总分原始…
         if (!metricCols.total && (has(h, "总分") || has(h, "总分得分") || has(h, "总分原始"))) {
             metricCols.total = c.key;
             continue;
         }
 
-        // 科目：按你模板截图列
+        // 科目：按模板截图列
         if (!metricCols.chinese && has(h, "语文")) { metricCols.chinese = c.key; continue; }
         if (!metricCols.math && has(h, "数学")) { metricCols.math = c.key; continue; }
         if (!metricCols.english && has(h, "英语")) { metricCols.english = c.key; continue; }
@@ -400,7 +400,7 @@ export async function importFiles(files: File[]): Promise<ExamConfig[]> {
         const wb = XLSX.read(ab, { type: "array" });
 
         for (const sheetName of wb.SheetNames) {
-            if (sheetName.trim() === "说明") continue; // ✅ 跳过说明页
+            if (sheetName.trim() === "说明") continue; // 跳过说明页
             const blocks = parseSheetToBlocks(wb, sheetName);
             if (!blocks.length) continue;
 
@@ -451,7 +451,7 @@ export async function importFiles(files: File[]): Promise<ExamConfig[]> {
                 // seen 太少不判断；否则非空比例过低 => 认为“班级列无效”
                 const ratio = seen ? nonEmpty / seen : 0;
 
-                // 阈值你可以调：0.1/0.2 都行。0.1 更保守，避免误判
+                // 阈值可以调：0.1/0.2 都行。0.1 更保守，避免误判
                 if (seen >= 10 && ratio < 0.1) {
                     // warnings.push(`检测到“班级”列但几乎全为空（非空 ${(ratio * 100).toFixed(0)}%），已按“无班级列”处理，将使用自动推断/班级覆盖。`);
                     fixedClassCol = ""; // 或 undefined
@@ -463,7 +463,6 @@ export async function importFiles(files: File[]): Promise<ExamConfig[]> {
             const metricCols0 = detectMetricCols(cols);
             const metricCols: MetricCols = { ...metricCols0, total: metricCols0.total || totalCol };
 
-            // ✅ 固定 log：你要的“每个 sheet 都有”
             // eslint-disable-next-line no-console
             console.log(`[metricCols] ${sheetName}`, metricCols);
 

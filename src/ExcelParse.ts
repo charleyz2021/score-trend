@@ -268,7 +268,7 @@ export function parseSheetToBlocks(wb: XLSX.WorkBook, sheetName: string): Parsed
   let matrix = XLSX.utils.sheet_to_json<any[]>(ws, { header: 1, defval: "" }) as any[][];
   if (!matrix.length) return [];
 
-  // ✅ 关键：先把合并单元格的值回填到 matrix（至少前30行足够识别表头）
+  // 先把合并单元格的值回填到 matrix（至少前30行足够识别表头）
   matrix = applyMergesToMatrix(ws, matrix, 30);
 
   const headerStartRow = detectHeaderStartRow(matrix);
